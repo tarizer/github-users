@@ -2,7 +2,7 @@ import React from "react";
 import spinner from "./spinner.gif";
 
 const Spinner = () => {
-  <img src={spinner} alt="Loading.." style={spinnerStyle} />;
+  return <img src={spinner} alt="Loading.." style={spinnerStyle} />;
 };
 
 /* Styles */

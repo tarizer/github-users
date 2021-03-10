@@ -1,11 +1,19 @@
 import React, { Component } from "react";
 import Navbar from "./components/layout/Navbar";
 import Users from "./components/users/Users";
+import axios from "axios";
 import "./App.css";
 
 class App extends Component {
-  componentDidMount() {
-    console.log(123);
+  state = {
+    users: [],
+    loading: false,
+  };
+  async componentDidMount() {
+    this.setState({ loading: true });
+    const response = await axios.get("https://api.github.com/users");
+    this.setState({ users: response.data, loading: false });
+    // console.log(response.data);
   }
 
   render() {
@@ -13,7 +21,8 @@ class App extends Component {
       <div className="App">
         <Navbar title="Github Users" icon="fab fa-github" />
         <div className="container">
-          <Users />
+          {/* {this.state.loading && "Loading.."} */}
+          <Users loading={this.state.loading} users={this.state.users} />
         </div>
       </div>
     );

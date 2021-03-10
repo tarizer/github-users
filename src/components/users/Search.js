@@ -9,8 +9,13 @@ class Search extends Component {
   onChange = (e) => this.setState({ [e.target.name]: e.target.value });
   onSubmit = (e) => {
     e.preventDefault();
-    this.state.text && this.props.searchUsers(this.state.text);
-    this.setState({ text: "" });
+    if (this.state.text === "") {
+      this.props.setAlert("Search text is mandatory.", "light");
+    } else {
+      this.props.removeAlert();
+      this.props.searchUsers(this.state.text);
+      this.setState({ text: "" });
+    }
   };
   render() {
     const { clearUsers, showClearButton } = this.props;
@@ -43,6 +48,8 @@ class Search extends Component {
   static propTypes = {
     searchUsers: PropTypes.func.isRequired,
     clearUsers: PropTypes.func.isRequired,
+    setAlert: PropTypes.func.isRequired,
+    removeAlert: PropTypes.func.isRequired,
     showClearButton: PropTypes.bool.isRequired,
   };
 }

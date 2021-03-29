@@ -54,13 +54,13 @@ class App extends Component {
       this.setState({ isLoading: true });
       const response = await axios.get(
         // `https://api.github.com/users/${username}`
-        `https://api.github.com/users/${username}/repos?per_page=5&sort=created:asc&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
+        `https://api.github.com/users/${username}/repos?per_page=6&sort=created:asc&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
         // , { headers: { "User-Agent": "Tarize" } }
       );
       this.setState({ repos: response.data, isLoading: false, isError: false });
     } catch (error) {
       // console.log(error);
-      // Can add a different error message for 403 & 404
+      // add a different error message for 403 & 404?
       console.log("Error!", error);
       this.setState({ isLoading: false, isError: true });
     }

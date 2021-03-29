@@ -3,6 +3,7 @@ import Spinner from "../layout/Spinner";
 import PropTypes from "prop-types";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
+import Repos from "../repos/Repos";
 
 const User = ({ getUser, user, getUserRepos, repos, isLoading, isError }) => {
   const { login } = useParams();
@@ -104,6 +105,9 @@ const User = ({ getUser, user, getUserRepos, repos, isLoading, isError }) => {
         <div className="badge badge-success">Following: {following}</div>
         <div className="badge badge-danger">Public Repos: {public_repos}</div>
         <div className="badge badge-dark">Public Gists: {public_gists}</div>
+      </div>
+      <div className="card grid-2">
+        {repos.length > 0 && <Repos repos={repos} />}
       </div>
       {console.log("user.login", user.login)}
       {console.log("login", login)}

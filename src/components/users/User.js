@@ -106,9 +106,7 @@ const User = ({ getUser, user, getUserRepos, repos, isLoading, isError }) => {
         <div className="badge badge-danger">Public Repos: {public_repos}</div>
         <div className="badge badge-dark">Public Gists: {public_gists}</div>
       </div>
-      <div className="card grid-2">
-        {repos.length > 0 && <Repos repos={repos} />}
-      </div>
+      {repos.length > 0 && <Repos repos={repos} />}
       {console.log("user.login", user.login)}
       {console.log("login", login)}
     </>

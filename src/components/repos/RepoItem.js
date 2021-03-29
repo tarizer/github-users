@@ -4,7 +4,7 @@ import React from "react";
 function RepoItem({ repo }) {
   return (
     <div className="card">
-      <h3 key={repo.id}>
+      <h3>
         <a href={repo.html_url} target="_blank" rel="noopener noreferrer">
           {repo.name}
         </a>

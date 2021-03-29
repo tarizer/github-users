@@ -5,7 +5,16 @@ import RepoItem from "./RepoItem";
 function Repos({ repos }) {
   console.log("Repos", repos.length);
 
-  return repos.map((repo) => <RepoItem repo={repo} />);
+  return (
+    <div className="card ">
+      <h2>Top Repos</h2>
+      <div className="grid-2">
+        {repos.map((repo) => (
+          <RepoItem key={repo.id} repo={repo} />
+        ))}
+      </div>
+    </div>
+  );
 }
 
 Repos.propTypes = {

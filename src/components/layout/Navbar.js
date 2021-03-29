@@ -13,9 +13,6 @@ const Navbar = ({ title, icon, user }) => {
       </h1>
       <ul>
         <li>
-          <Link to={`/user/${user.login}`}>{user.name}</Link>
-        </li>
-        <li>
           <Link to="/">Home</Link>
         </li>
         <li>
@@ -23,6 +20,9 @@ const Navbar = ({ title, icon, user }) => {
         </li>
         <li>
           <Link to="/info">Info</Link>
+        </li>
+        <li>
+          <Link to={`/user/${user.login}`}>{user.name}</Link>
         </li>
       </ul>
     </nav>

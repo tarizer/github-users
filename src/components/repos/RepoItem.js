@@ -9,6 +9,7 @@ function RepoItem({ repo }) {
           {repo.name}
         </a>
       </h3>
+      <p>{repo.description}</p>
     </div>
   );
 }

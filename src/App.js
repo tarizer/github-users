@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useReducer } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import axios from "axios";
 import Navbar from "./components/layout/Navbar";
@@ -9,134 +9,245 @@ import Alert from "./components/layout/Alert";
 import About from "./pages/About";
 import "./App.css";
 
-class App extends Component {
-  state = {
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "SEARCH_USERS":
+      return {
+        ...state,
+        isLoading: true,
+        // error: "",
+      };
+    case "SEARCH_USERS_SUCCESS":
+      return {
+        ...state,
+        users: action.payload,
+        isLoading: false,
+        error: "",
+      };
+    case "SEARCH_USERS_ERROR":
+      return {
+        ...state,
+        isLoading: false,
+        error: "/!\\ API limit reached",
+      };
+    case "CLEAR_USERS":
+      return {
+        ...state,
+        users: [],
+        isLoading: false,
+      };
+    case "GET_USER":
+      return {
+        ...state,
+        isLoading: true,
+      };
+    case "GET_USER_SUCCESS":
+      return {
+        ...state,
+        user: action.payload,
+        isLoading: false,
+        error: "",
+      };
+    case "GET_USER_ERROR":
+      return {
+        ...state,
+        isLoading: false,
+        error: action.payload,
+      };
+    case "GET_REPOS":
+      return {
+        ...state,
+        isLoading: true,
+        // error: ""
+      };
+    case "GET_REPOS_SUCCESS":
+      return {
+        ...state,
+        repos: action.payload,
+        isLoading: false,
+        error: "",
+      };
+    case "GET_REPOS_ERROR":
+      return {
+        ...state,
+        isLoading: false,
+        //error: "(Repos) --> User not found or API limit reached",
+      };
+    case "SET_ALERT":
+      return {
+        ...state,
+        alert: action.payload,
+      };
+    case "REMOVE_ALERT":
+      return {
+        ...state,
+        alert: null,
+      };
+    default:
+      throw new Error("Action type not valid!");
+  }
+};
+
+// dispatch({type: "displayAlert", payload: { message, type }})
+// setAlert({ message, type });
+
+const App = () => {
+  const initialState = {
     users: [],
     user: {},
     repos: [],
     isLoading: false,
-    isError: false,
+    error: "",
     alert: null,
   };
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  const { users, user, repos, isLoading, error, alert } = state;
+
+  // const [users, setUsers] = useState([]);
+  // const [user, setUser] = useState({});
+  // const [repos, setRepos] = useState([]);
+  // const [isLoading, setIsLoading] = useState(false);
+  // const [error, setError] = useState(false);
+  // const [alert, setAlert] = useState(null);
+
+  // const { isLoading, error, users, repos, user, alert } = state;
 
   // Search Github users
-  searchUsers = async (text) => {
-    this.setState({ isLoading: true });
-    const response = await axios.get(
-      // `https://api.github.com/search/users?q=${text}`
-      `https://api.github.com/search/users?q=${text}&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
-    );
-    this.setState({ users: response.data.items, isLoading: false });
+  const searchUsers = async (text) => {
+    dispatch({ type: "SEARCH_USERS" });
+    try {
+      const response = await axios.get(
+        // `https://api.github.com/search/users?q=${text}`
+        `https://api.github.com/search/users?q=${text}&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
+      );
+      dispatch({ type: "SEARCH_USERS_SUCCESS", payload: response.data.items });
+    } catch (errorObject) {
+      dispatch({ type: "SEARCH_USERS_ERROR" });
+      console.log("Error: ", error, errorObject);
+    }
+  };
+
+  // Clears users from state
+  const clearUsers = () => {
+    // setState({ users: [], isLoading: false });
+    dispatch({ type: "CLEAR_USERS" });
+    // setUsers([]);
+    // setIsLoading(false);
   };
 
   // Get single Github user
-  getUser = async (username) => {
+  const getUser = async (username) => {
+    dispatch({ type: "GET_USER" });
     try {
-      this.setState({ isLoading: true });
+      // setIsLoading(true);
       const response = await axios.get(
         // `https://api.github.com/users/${username}`
         `https://api.github.com/users/${username}?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
         // , { headers: { "User-Agent": "Tarize" } }
       );
-      this.setState({ user: response.data, isLoading: false, isError: false });
-    } catch (error) {
+      // setState({ user: response.data, isLoading: false, error: false });
+      // setUser(response.data);
+      // setIsLoading(false);
+      // setError(false);
+      dispatch({ type: "GET_USER_SUCCESS", payload: response.data });
+    } catch (errorObject) {
       // console.log(error);
       // Can add a different error message for 403 & 404
-      console.log("Error!", error);
-      this.setState({ isLoading: false, isError: true });
+      // setState({ isLoading: false, error: true });
+      // setIsLoading(false);
+      // setError(true);
+      const error = "/!\\ User not found or API limit reached";
+      dispatch({ type: "GET_USER_ERROR", payload: error });
+      console.log("Error: ", error, errorObject);
     }
-    // this.setState({ isLoading: false });
+    // setState({ isLoading: false });
   };
 
   // Get user repos
-  getUserRepos = async (username) => {
+  const getUserRepos = async (username) => {
+    dispatch({ type: "GET_REPOS" });
     try {
-      this.setState({ isLoading: true });
+      // setIsLoading(true);
       const response = await axios.get(
-        // `https://api.github.com/users/${username}`
+        // `https://api.github.com/users/${username}/repos?per_page=6&sort=created:asc`
         `https://api.github.com/users/${username}/repos?per_page=6&sort=created:asc&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
         // , { headers: { "User-Agent": "Tarize" } }
       );
-      this.setState({ repos: response.data, isLoading: false, isError: false });
-    } catch (error) {
+      // setState({ repos: response.data, isLoading: false, error: false });
+      // setRepos(response.data);
+      // setIsLoading(false);
+      // setError(false);
+      dispatch({ type: "GET_REPOS_SUCCESS", payload: response.data });
+    } catch (errorObject) {
       // console.log(error);
       // add a different error message for 403 & 404?
-      console.log("Error!", error);
-      this.setState({ isLoading: false, isError: true });
+      // setState({ isLoading: false, error: true });
+      // setIsLoading(false);
+      // setError(true);
+      dispatch({ type: "GET_REPOS_ERROR" });
+      // console.log("Error:", error, errorObject);
     }
-    // this.setState({ isLoading: false });
+    // setState({ isLoading: false });
   };
 
-  // Clears users from state
-  clearUsers = () => this.setState({ users: [], isLoading: false });
-
-  setAlert = (message, type) => {
-    this.setState({ alert: { message, type } });
+  const displayAlert = (message, type) => {
+    dispatch({ type: "SET_ALERT", payload: { message, type } });
+    // setAlert({ message, type });
     setTimeout(() => {
-      this.setState({ alert: null });
+      // setAlert(null);
+      dispatch({ type: "REMOVE_ALERT" });
     }, 5000);
   };
 
-  removeAlert = () => {
-    this.setState({ alert: null });
+  const removeAlert = () => {
+    dispatch({ type: "REMOVE_ALERT" });
+    // setAlert(null);
   };
 
-  render() {
-    const { isLoading, isError, users, repos, user, alert } = this.state;
-    // console.log(user);
-    return (
-      <Router>
-        <div className="App">
-          <Navbar title="Github Users" icon="fab fa-github" user={user} />
-          <div className="container">
-            {this.state.alert && <Alert alert={alert} />}
-            {/* <Alert alert={alert} /> */}
+  // console.log(user);
+  return (
+    <Router>
+      <div className="App">
+        <Navbar title="Github Users" icon="fab fa-github" user={user} />
+        <div className="container">
+          {alert && <Alert alert={alert} />}
 
-            <Switch>
-              <Route path="/about">
-                <About />
-              </Route>
-              <Route path="/info">
-                <Info />
-              </Route>
-              <Route exact path={`/user/:login`}>
-                <User
-                  getUser={this.getUser}
-                  getUserRepos={this.getUserRepos}
-                  user={user}
-                  repos={repos}
-                  isLoading={isLoading}
-                  isError={isError}
-                />
-              </Route>
-              <Route exact path="/">
-                <Search
-                  searchUsers={this.searchUsers}
-                  clearUsers={this.clearUsers}
-                  setAlert={this.setAlert}
-                  removeAlert={this.removeAlert}
-                  showClearButton={users.length > 0 ? true : false}
-                />
-                <Users isLoading={isLoading} users={users} />
-              </Route>
-            </Switch>
-          </div>
+          <Switch>
+            <Route path="/about">
+              <About />
+            </Route>
+            <Route path="/info">
+              <Info />
+            </Route>
+            <Route exact path={`/user/:login`}>
+              <User
+                getUser={getUser}
+                getUserRepos={getUserRepos}
+                user={user}
+                repos={repos}
+                isLoading={isLoading}
+                error={error}
+              />
+            </Route>
+            <Route exact path="/">
+              <Search
+                searchUsers={searchUsers}
+                clearUsers={clearUsers}
+                displayAlert={displayAlert}
+                removeAlert={removeAlert}
+                showClearButton={users.length > 0 ? true : false}
+              />
+              <Users isLoading={isLoading} users={users} />
+            </Route>
+          </Switch>
         </div>
-      </Router>
-    );
-  }
-}
+      </div>
+    </Router>
+  );
+};
 
 export default App;
-
-// async componentDidMount() {
-//   this.setState({ isLoading: true });
-//   const response = await axios.get(
-//     `https://api.github.com/users?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
-//   );
-//   this.setState({ users: response.data, isLoading: false });
-//   // console.log(response.data);
-// }
 
 function Info() {
   return (

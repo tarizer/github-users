@@ -5,17 +5,8 @@ import { useParams } from "react-router";
 import { Link } from "react-router-dom";
 import Repos from "../repos/Repos";
 
-const User = ({ getUser, user, getUserRepos, repos, isLoading, isError }) => {
+const User = ({ getUser, user, getUserRepos, repos, isLoading, error }) => {
   const { login } = useParams();
-
-  // Wait for useEffect to get new user info before rendering
-  if (login !== user.login && !isError) isLoading = true;
-
-  useEffect(() => {
-    getUser(login);
-    getUserRepos(login);
-  }, [getUser, getUserRepos, login]);
-
   const {
     name,
     company,
@@ -32,10 +23,18 @@ const User = ({ getUser, user, getUserRepos, repos, isLoading, isError }) => {
     hireable,
   } = user;
 
-  // isLoading && <Spinner />;
+  // Wait for useEffect to get new user info before rendering
+  if (login !== user.login && !error) isLoading = true;
+
+  useEffect(() => {
+    getUser(login);
+    getUserRepos(login);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (isLoading) return <Spinner />;
-  if (isError) return <span>User does not exist or API limit reached</span>;
+  if (error) return <span>{error}</span>;
+  // if (error) return <span>User does not exist or API limit reached</span>;
 
   return (
     <>
@@ -116,7 +115,7 @@ const User = ({ getUser, user, getUserRepos, repos, isLoading, isError }) => {
 User.propTypes = {
   getUser: PropTypes.func.isRequired,
   getUserRepos: PropTypes.func.isRequired,
-  isError: PropTypes.bool.isRequired,
+  error: PropTypes.string.isRequired,
   isLoading: PropTypes.bool.isRequired,
   repos: PropTypes.array.isRequired,
   user: PropTypes.object.isRequired,

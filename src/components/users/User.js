@@ -24,13 +24,13 @@ const User = ({ getUser, user, getUserRepos, repos, isLoading, error }) => {
   } = user;
 
   // Wait for useEffect to get new user info before rendering
-  if (login !== user.login && !error) isLoading = true;
+  // if (login !== user.login && !error) isLoading = true;
 
   useEffect(() => {
     getUser(login);
     getUserRepos(login);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    // Need to use useCallback to avoid infinite rendering
+  }, [login, getUser, getUserRepos]);
 
   if (isLoading) return <Spinner />;
   if (error) return <span>{error}</span>;
@@ -104,6 +104,9 @@ const User = ({ getUser, user, getUserRepos, repos, isLoading, error }) => {
         <div className="badge badge-success">Following: {following}</div>
         <div className="badge badge-danger">Public Repos: {public_repos}</div>
         <div className="badge badge-dark">Public Gists: {public_gists}</div>
+      </div>
+      <div>
+        <Link to={`/user/antfu`}>antfu</Link>
       </div>
       {repos.length > 0 && <Repos repos={repos} />}
       {console.log("user.login", user.login)}

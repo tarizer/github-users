@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React, { useCallback, useReducer } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import axios from "axios";
 import Navbar from "./components/layout/Navbar";
@@ -8,6 +8,8 @@ import Search from "./components/users/Search";
 import Alert from "./components/layout/Alert";
 import About from "./pages/About";
 import "./App.css";
+// import USER from "./mock/user.json";
+// import REPO from "./mock/repos.json";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -88,9 +90,6 @@ const reducer = (state, action) => {
   }
 };
 
-// dispatch({type: "displayAlert", payload: { message, type }})
-// setAlert({ message, type });
-
 const App = () => {
   const initialState = {
     users: [],
@@ -104,15 +103,6 @@ const App = () => {
 
   const { users, user, repos, isLoading, error, alert } = state;
 
-  // const [users, setUsers] = useState([]);
-  // const [user, setUser] = useState({});
-  // const [repos, setRepos] = useState([]);
-  // const [isLoading, setIsLoading] = useState(false);
-  // const [error, setError] = useState(false);
-  // const [alert, setAlert] = useState(null);
-
-  // const { isLoading, error, users, repos, user, alert } = state;
-
   // Search Github users
   const searchUsers = async (text) => {
     dispatch({ type: "SEARCH_USERS" });
@@ -124,85 +114,59 @@ const App = () => {
       dispatch({ type: "SEARCH_USERS_SUCCESS", payload: response.data.items });
     } catch (errorObject) {
       dispatch({ type: "SEARCH_USERS_ERROR" });
-      console.log("Error: ", error, errorObject);
+      console.log("Error: ", errorObject);
     }
   };
 
   // Clears users from state
   const clearUsers = () => {
-    // setState({ users: [], isLoading: false });
     dispatch({ type: "CLEAR_USERS" });
-    // setUsers([]);
-    // setIsLoading(false);
   };
 
   // Get single Github user
-  const getUser = async (username) => {
+  const getUser = useCallback(async (username) => {
     dispatch({ type: "GET_USER" });
     try {
-      // setIsLoading(true);
       const response = await axios.get(
         // `https://api.github.com/users/${username}`
         `https://api.github.com/users/${username}?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
         // , { headers: { "User-Agent": "Tarize" } }
       );
-      // setState({ user: response.data, isLoading: false, error: false });
-      // setUser(response.data);
-      // setIsLoading(false);
-      // setError(false);
+      // const response = { data: USER };
       dispatch({ type: "GET_USER_SUCCESS", payload: response.data });
     } catch (errorObject) {
-      // console.log(error);
-      // Can add a different error message for 403 & 404
-      // setState({ isLoading: false, error: true });
-      // setIsLoading(false);
-      // setError(true);
       const error = "/!\\ User not found or API limit reached";
       dispatch({ type: "GET_USER_ERROR", payload: error });
       console.log("Error: ", error, errorObject);
     }
-    // setState({ isLoading: false });
-  };
+  }, []);
 
   // Get user repos
-  const getUserRepos = async (username) => {
+  const getUserRepos = useCallback(async (username) => {
     dispatch({ type: "GET_REPOS" });
     try {
-      // setIsLoading(true);
       const response = await axios.get(
         // `https://api.github.com/users/${username}/repos?per_page=6&sort=created:asc`
         `https://api.github.com/users/${username}/repos?per_page=6&sort=created:asc&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
         // , { headers: { "User-Agent": "Tarize" } }
       );
-      // setState({ repos: response.data, isLoading: false, error: false });
-      // setRepos(response.data);
-      // setIsLoading(false);
-      // setError(false);
+      // const response = { data: REPO };
       dispatch({ type: "GET_REPOS_SUCCESS", payload: response.data });
     } catch (errorObject) {
-      // console.log(error);
-      // add a different error message for 403 & 404?
-      // setState({ isLoading: false, error: true });
-      // setIsLoading(false);
-      // setError(true);
       dispatch({ type: "GET_REPOS_ERROR" });
-      // console.log("Error:", error, errorObject);
     }
-    // setState({ isLoading: false });
-  };
+  }, []);
 
+  // Display alert for empty searches
   const displayAlert = (message, type) => {
     dispatch({ type: "SET_ALERT", payload: { message, type } });
-    // setAlert({ message, type });
     setTimeout(() => {
-      // setAlert(null);
       dispatch({ type: "REMOVE_ALERT" });
     }, 5000);
   };
 
   const removeAlert = () => {
     dispatch({ type: "REMOVE_ALERT" });
-    // setAlert(null);
   };
 
   // console.log(user);

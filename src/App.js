@@ -119,6 +119,7 @@ const App = () => {
   };
 
   // Clears users from state
+
   const clearUsers = () => {
     dispatch({ type: "CLEAR_USERS" });
   };

@@ -7,80 +7,83 @@ import User from "./components/users/User";
 import Search from "./components/users/Search";
 import Alert from "./components/layout/Alert";
 import About from "./pages/About";
+import * as actions from "./context/types";
 import "./App.css";
+
+import GithubState from "./context/github/GithubState";
 // import USER from "./mock/user.json";
 // import REPO from "./mock/repos.json";
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "SEARCH_USERS":
+    case actions.SEARCH_USERS:
       return {
         ...state,
         isLoading: true,
         // error: "",
       };
-    case "SEARCH_USERS_SUCCESS":
+    case actions.SEARCH_USERS_SUCCESS:
       return {
         ...state,
         users: action.payload,
         isLoading: false,
         error: "",
       };
-    case "SEARCH_USERS_ERROR":
+    case actions.SEARCH_USERS_ERROR:
       return {
         ...state,
         isLoading: false,
         error: "/!\\ API limit reached",
       };
-    case "CLEAR_USERS":
+    case actions.CLEAR_USERS:
       return {
         ...state,
         users: [],
         isLoading: false,
       };
-    case "GET_USER":
+    case actions.GET_USER:
       return {
         ...state,
         isLoading: true,
       };
-    case "GET_USER_SUCCESS":
+    case actions.GET_USER_SUCCESS:
       return {
         ...state,
         user: action.payload,
         isLoading: false,
         error: "",
       };
-    case "GET_USER_ERROR":
+    case actions.GET_USER_ERROR:
       return {
         ...state,
         isLoading: false,
         error: action.payload,
       };
-    case "GET_REPOS":
+    case actions.GET_REPOS:
       return {
         ...state,
         isLoading: true,
         // error: ""
       };
-    case "GET_REPOS_SUCCESS":
+    case actions.GET_REPOS_SUCCESS:
       return {
         ...state,
         repos: action.payload,
         isLoading: false,
         error: "",
       };
-    case "GET_REPOS_ERROR":
+    case actions.GET_REPOS_ERROR:
       return {
         ...state,
         isLoading: false,
         //error: "(Repos) --> User not found or API limit reached",
       };
-    case "SET_ALERT":
+    case actions.SET_ALERT:
       return {
         ...state,
         alert: action.payload,
       };
-    case "REMOVE_ALERT":
+    case actions.REMOVE_ALERT:
       return {
         ...state,
         alert: null,
@@ -102,21 +105,6 @@ const App = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const { users, user, repos, isLoading, error, alert } = state;
-
-  // Search Github users
-  const searchUsers = async (text) => {
-    dispatch({ type: "SEARCH_USERS" });
-    try {
-      const response = await axios.get(
-        // `https://api.github.com/search/users?q=${text}`
-        `https://api.github.com/search/users?q=${text}&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
-      );
-      dispatch({ type: "SEARCH_USERS_SUCCESS", payload: response.data.items });
-    } catch (errorObject) {
-      dispatch({ type: "SEARCH_USERS_ERROR" });
-      console.log("Error: ", errorObject);
-    }
-  };
 
   // Clears users from state
 
@@ -172,43 +160,45 @@ const App = () => {
 
   // console.log(user);
   return (
-    <Router>
-      <div className="App">
-        <Navbar title="Github Users" icon="fab fa-github" user={user} />
-        <div className="container">
-          {alert && <Alert alert={alert} />}
+    <GithubState>
+      <Router>
+        <div className="App">
+          <Navbar title="Github Users" icon="fab fa-github" user={user} />
+          <div className="container">
+            {alert && <Alert alert={alert} />}
 
-          <Switch>
-            <Route path="/about">
-              <About />
-            </Route>
-            <Route path="/info">
-              <Info />
-            </Route>
-            <Route exact path={`/user/:login`}>
-              <User
-                getUser={getUser}
-                getUserRepos={getUserRepos}
-                user={user}
-                repos={repos}
-                isLoading={isLoading}
-                error={error}
-              />
-            </Route>
-            <Route exact path="/">
-              <Search
-                searchUsers={searchUsers}
-                clearUsers={clearUsers}
-                displayAlert={displayAlert}
-                removeAlert={removeAlert}
-                showClearButton={users.length > 0 ? true : false}
-              />
-              <Users isLoading={isLoading} users={users} />
-            </Route>
-          </Switch>
+            <Switch>
+              <Route path="/about">
+                <About />
+              </Route>
+              <Route path="/info">
+                <Info />
+              </Route>
+              <Route exact path={`/user/:login`}>
+                <User
+                  getUser={getUser}
+                  getUserRepos={getUserRepos}
+                  user={user}
+                  repos={repos}
+                  isLoading={isLoading}
+                  error={error}
+                />
+              </Route>
+              <Route exact path="/">
+                <Search
+                  //searchUsers={searchUsers}
+                  clearUsers={clearUsers}
+                  displayAlert={displayAlert}
+                  removeAlert={removeAlert}
+                  showClearButton={users.length > 0 ? true : false}
+                />
+                <Users isLoading={isLoading} />
+              </Route>
+            </Switch>
+          </div>
         </div>
-      </div>
-    </Router>
+      </Router>
+    </GithubState>
   );
 };
 

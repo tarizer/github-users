@@ -4,12 +4,15 @@ import GithubContext from "../../context/github/githubContext";
 
 const Search = ({
   //searchUsers,
-  clearUsers,
+  //clearUsers,
   displayAlert,
   removeAlert,
-  showClearButton,
+  //showClearButton,
 }) => {
   const githubContext = useContext(GithubContext);
+  const { users, searchUsers, clearUsers } = githubContext;
+  const showClearButton = users.length > 0 ? true : false;
+
   const [text, setText] = useState("");
   const onChange = (e) => setText(e.target.value);
   const onSubmit = (e) => {
@@ -18,7 +21,7 @@ const Search = ({
       displayAlert("Please enter a search term!", "light");
     } else {
       removeAlert();
-      githubContext.searchUsers(text);
+      searchUsers(text);
       setText("");
     }
   };
@@ -51,10 +54,10 @@ const Search = ({
 
 Search.propTypes = {
   //searchUsers: PropTypes.func.isRequired,
-  clearUsers: PropTypes.func.isRequired,
+  //clearUsers: PropTypes.func.isRequired,
   displayAlert: PropTypes.func.isRequired,
   removeAlert: PropTypes.func.isRequired,
-  showClearButton: PropTypes.bool.isRequired,
+  //showClearButton: PropTypes.bool.isRequired,
 };
 
 export default Search;

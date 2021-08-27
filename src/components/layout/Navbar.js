@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
+import GithubContext from "../../context/github/githubContext";
 
-const Navbar = ({ title, icon, user }) => {
+const Navbar = ({ title, icon }) => {
+  const { user } = useContext(GithubContext);
+
   // console.log(user);
   return (
     <nav className="navbar bg-primary">
@@ -37,7 +40,7 @@ Navbar.defaultProps = {
 Navbar.propTypes = {
   title: PropTypes.string.isRequired,
   icon: PropTypes.string.isRequired,
-  user: PropTypes.object,
+  // user: PropTypes.object,
 };
 
 export default Navbar;

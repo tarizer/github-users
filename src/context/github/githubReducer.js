@@ -3,10 +3,11 @@ import * as types from "../types";
 const GithubReducer = (state, action) => {
   switch (action.type) {
     case types.SEARCH_USERS:
+    case types.GET_USER:
+    case types.GET_REPOS:
       return {
         ...state,
         isLoading: true,
-        // error: "",
       };
     case types.SEARCH_USERS_SUCCESS:
       return {
@@ -27,11 +28,6 @@ const GithubReducer = (state, action) => {
         users: [],
         isLoading: false,
       };
-    case types.GET_USER:
-      return {
-        ...state,
-        isLoading: true,
-      };
     case types.GET_USER_SUCCESS:
       return {
         ...state,
@@ -44,12 +40,6 @@ const GithubReducer = (state, action) => {
         ...state,
         isLoading: false,
         error: action.payload,
-      };
-    case types.GET_REPOS:
-      return {
-        ...state,
-        isLoading: true,
-        // error: ""
       };
     case types.GET_REPOS_SUCCESS:
       return {

@@ -1,6 +1,5 @@
-import React, { useCallback, useReducer } from "react";
+import React, { useReducer } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import axios from "axios";
 import Navbar from "./components/layout/Navbar";
 import Users from "./components/users/Users";
 import User from "./components/users/User";
@@ -16,68 +15,68 @@ import GithubState from "./context/github/GithubState";
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case actions.SEARCH_USERS:
-      return {
-        ...state,
-        isLoading: true,
-        // error: "",
-      };
-    case actions.SEARCH_USERS_SUCCESS:
-      return {
-        ...state,
-        users: action.payload,
-        isLoading: false,
-        error: "",
-      };
-    case actions.SEARCH_USERS_ERROR:
-      return {
-        ...state,
-        isLoading: false,
-        error: "/!\\ API limit reached",
-      };
-    case actions.CLEAR_USERS:
-      return {
-        ...state,
-        users: [],
-        isLoading: false,
-      };
-    case actions.GET_USER:
-      return {
-        ...state,
-        isLoading: true,
-      };
-    case actions.GET_USER_SUCCESS:
-      return {
-        ...state,
-        user: action.payload,
-        isLoading: false,
-        error: "",
-      };
-    case actions.GET_USER_ERROR:
-      return {
-        ...state,
-        isLoading: false,
-        error: action.payload,
-      };
-    case actions.GET_REPOS:
-      return {
-        ...state,
-        isLoading: true,
-        // error: ""
-      };
-    case actions.GET_REPOS_SUCCESS:
-      return {
-        ...state,
-        repos: action.payload,
-        isLoading: false,
-        error: "",
-      };
-    case actions.GET_REPOS_ERROR:
-      return {
-        ...state,
-        isLoading: false,
-        //error: "(Repos) --> User not found or API limit reached",
-      };
+    // case actions.SEARCH_USERS:
+    //   return {
+    //     ...state,
+    //     isLoading: true,
+    //     // error: "",
+    //   };
+    // case actions.SEARCH_USERS_SUCCESS:
+    //   return {
+    //     ...state,
+    //     users: action.payload,
+    //     isLoading: false,
+    //     error: "",
+    //   };
+    // case actions.SEARCH_USERS_ERROR:
+    //   return {
+    //     ...state,
+    //     isLoading: false,
+    //     error: "/!\\ API limit reached",
+    //   };
+    // case actions.CLEAR_USERS:
+    //   return {
+    //     ...state,
+    //     users: [],
+    //     isLoading: false,
+    //   };
+    // case actions.GET_USER:
+    //   return {
+    //     ...state,
+    //     isLoading: true,
+    //   };
+    // case actions.GET_USER_SUCCESS:
+    //   return {
+    //     ...state,
+    //     user: action.payload,
+    //     isLoading: false,
+    //     error: "",
+    //   };
+    // case actions.GET_USER_ERROR:
+    //   return {
+    //     ...state,
+    //     isLoading: false,
+    //     error: action.payload,
+    //   };
+    // case actions.GET_REPOS:
+    //   return {
+    //     ...state,
+    //     isLoading: true,
+    //     // error: ""
+    //   };
+    // case actions.GET_REPOS_SUCCESS:
+    //   return {
+    //     ...state,
+    //     repos: action.payload,
+    //     isLoading: false,
+    //     error: "",
+    //   };
+    // case actions.GET_REPOS_ERROR:
+    //   return {
+    //     ...state,
+    //     isLoading: false,
+    //     //error: "(Repos) --> User not found or API limit reached",
+    //   };
     case actions.SET_ALERT:
       return {
         ...state,
@@ -95,7 +94,7 @@ const reducer = (state, action) => {
 
 const App = () => {
   const initialState = {
-    users: [],
+    //users: [],
     user: {},
     repos: [],
     isLoading: false,
@@ -104,54 +103,13 @@ const App = () => {
   };
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const { users, user, repos, isLoading, error, alert } = state;
-
-  // Clears users from state
-
-  const clearUsers = () => {
-    dispatch({ type: "CLEAR_USERS" });
-  };
-
-  // Get single Github user
-  const getUser = useCallback(async (username) => {
-    dispatch({ type: "GET_USER" });
-    try {
-      const response = await axios.get(
-        // `https://api.github.com/users/${username}`
-        `https://api.github.com/users/${username}?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
-        // , { headers: { "User-Agent": "Tarize" } }
-      );
-      // const response = { data: USER };
-      dispatch({ type: "GET_USER_SUCCESS", payload: response.data });
-    } catch (errorObject) {
-      const error = "/!\\ User not found or API limit reached";
-      dispatch({ type: "GET_USER_ERROR", payload: error });
-      console.log("Error: ", error, errorObject);
-    }
-  }, []);
-
-  // Get user repos
-  const getUserRepos = useCallback(async (username) => {
-    dispatch({ type: "GET_REPOS" });
-    try {
-      const response = await axios.get(
-        // `https://api.github.com/users/${username}/repos?per_page=6&sort=created:asc`
-        `https://api.github.com/users/${username}/repos?per_page=6&sort=created:asc&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
-        // , { headers: { "User-Agent": "Tarize" } }
-      );
-      // const response = { data: REPO };
-      dispatch({ type: "GET_REPOS_SUCCESS", payload: response.data });
-    } catch (errorObject) {
-      dispatch({ type: "GET_REPOS_ERROR" });
-    }
-  }, []);
+  const { alert } = state;
+  // const { users, user, repos, isLoading, error, alert } = state;
 
   // Display alert for empty searches
   const displayAlert = (message, type) => {
     dispatch({ type: "SET_ALERT", payload: { message, type } });
-    setTimeout(() => {
-      dispatch({ type: "REMOVE_ALERT" });
-    }, 5000);
+    setTimeout(removeAlert, 5000);
   };
 
   const removeAlert = () => {
@@ -163,7 +121,7 @@ const App = () => {
     <GithubState>
       <Router>
         <div className="App">
-          <Navbar title="Github Users" icon="fab fa-github" user={user} />
+          <Navbar title="Github Users" icon="fab fa-github" />
           <div className="container">
             {alert && <Alert alert={alert} />}
 
@@ -175,24 +133,17 @@ const App = () => {
                 <Info />
               </Route>
               <Route exact path={`/user/:login`}>
-                <User
-                  getUser={getUser}
-                  getUserRepos={getUserRepos}
-                  user={user}
-                  repos={repos}
-                  isLoading={isLoading}
-                  error={error}
-                />
+                <User />
               </Route>
               <Route exact path="/">
                 <Search
                   //searchUsers={searchUsers}
-                  clearUsers={clearUsers}
+                  //clearUsers={clearUsers}
                   displayAlert={displayAlert}
                   removeAlert={removeAlert}
-                  showClearButton={users.length > 0 ? true : false}
+                  //showClearButton={users.length > 0 ? true : false}
                 />
-                <Users isLoading={isLoading} />
+                <Users />
               </Route>
             </Switch>
           </div>

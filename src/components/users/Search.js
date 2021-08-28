@@ -1,16 +1,14 @@
 import React, { useContext, useState } from "react";
-import PropTypes from "prop-types";
+import AlertContext from "../../context/alert/alertContext";
 import GithubContext from "../../context/github/githubContext";
+// import PropTypes from "prop-types";
 
-const Search = ({
-  //searchUsers,
-  //clearUsers,
-  displayAlert,
-  removeAlert,
-  //showClearButton,
-}) => {
+const Search = () => {
   const githubContext = useContext(GithubContext);
   const { users, searchUsers, clearUsers } = githubContext;
+
+  const { displayAlert, removeAlert } = useContext(AlertContext);
+
   const showClearButton = users.length > 0 ? true : false;
 
   const [text, setText] = useState("");
@@ -52,12 +50,12 @@ const Search = ({
   );
 };
 
-Search.propTypes = {
-  //searchUsers: PropTypes.func.isRequired,
-  //clearUsers: PropTypes.func.isRequired,
-  displayAlert: PropTypes.func.isRequired,
-  removeAlert: PropTypes.func.isRequired,
-  //showClearButton: PropTypes.bool.isRequired,
-};
+// Search.propTypes = {
+//   //searchUsers: PropTypes.func.isRequired,
+//   //clearUsers: PropTypes.func.isRequired,
+//   // displayAlert: PropTypes.func.isRequired,
+//   // removeAlert: PropTypes.func.isRequired,
+//   //showClearButton: PropTypes.bool.isRequired,
+// };
 
 export default Search;

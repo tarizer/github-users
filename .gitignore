@@ -26,3 +26,6 @@ node_modules
 # Mocking
 
 src/mock
+
+# Local Netlify folder
+.netlify

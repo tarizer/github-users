@@ -6,11 +6,11 @@ import User from "./components/users/User";
 import Search from "./components/users/Search";
 import Alert from "./components/layout/Alert";
 import About from "./pages/About";
+import { NotFound } from "./pages/NotFound";
 import "./App.css";
 
 import GithubState from "./context/github/GithubState";
 import AlertState from "./context/alert/alertState";
-import { NotFound } from "./pages/NotFound";
 
 const App = () => {
   return (

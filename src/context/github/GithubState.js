@@ -15,7 +15,16 @@ import {
   GET_REPOS_ERROR,
 } from "../types";
 
-//import * as types from "../types";
+let githubClientId;
+let githubClientSecret;
+
+if (process.env.NODE_ENV !== "production") {
+  githubClientId = process.env.REACT_APP_GITHUB_CLIENT_ID;
+  githubClientSecret = process.env.REACT_APP_GITHUB_CLIENT_SECRET;
+} else {
+  githubClientId = process.env.GITHUB_CLIENT_ID;
+  githubClientSecret = process.env.GITHUB_CLIENT_SECRET;
+}
 
 const GithubState = ({ children }) => {
   const initialState = {
@@ -24,7 +33,6 @@ const GithubState = ({ children }) => {
     repos: [],
     isLoading: false,
     error: "",
-    //alert: null,
   };
 
   const [state, dispatch] = useReducer(GithubReducer, initialState);
@@ -33,12 +41,10 @@ const GithubState = ({ children }) => {
 
   // Search Github users
   const searchUsers = async (text) => {
-    // dispatch({ type: "SEARCH_USERS" });
     dispatch({ type: SEARCH_USERS });
     try {
       const response = await axios.get(
-        // `https://api.github.com/search/users?q=${text}`
-        `https://api.github.com/search/users?q=${text}&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
+        `https://api.github.com/search/users?q=${text}&client_id=${githubClientId}&client_secret=${githubClientSecret}`
       );
       dispatch({ type: SEARCH_USERS_SUCCESS, payload: response.data.items });
     } catch (errorObject) {
@@ -57,11 +63,8 @@ const GithubState = ({ children }) => {
     dispatch({ type: GET_USER });
     try {
       const response = await axios.get(
-        // `https://api.github.com/users/${username}`
-        `https://api.github.com/users/${username}?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
-        // , { headers: { "User-Agent": "Tarize" } }
+        `https://api.github.com/users/${username}?client_id=${githubClientId}&client_secret=${githubClientSecret}`
       );
-      // const response = { data: USER };
       dispatch({ type: GET_USER_SUCCESS, payload: response.data });
     } catch (errorObject) {
       const error = "/!\\ User not found or API limit reached";
@@ -75,11 +78,8 @@ const GithubState = ({ children }) => {
     dispatch({ type: GET_REPOS });
     try {
       const response = await axios.get(
-        // `https://api.github.com/users/${username}/repos?per_page=6&sort=created:asc`
-        `https://api.github.com/users/${username}/repos?per_page=6&sort=created:asc&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
-        // , { headers: { "User-Agent": "Tarize" } }
+        `https://api.github.com/users/${username}/repos?per_page=6&sort=created:asc&client_id=${githubClientId}&client_secret=${githubClientSecret}`
       );
-      // const response = { data: REPO };
       dispatch({ type: GET_REPOS_SUCCESS, payload: response.data });
     } catch (errorObject) {
       dispatch({ type: GET_REPOS_ERROR });

@@ -29,3 +29,6 @@ src/mock
 
 # Local Netlify folder
 .netlify
+
+# Vscode
+.vscode
